@@ -6,10 +6,10 @@ sbit light2 = P2^1;
 sbit light3 = P2^2;
 sbit light4 = P2^3;
 
-int result=0;//×îºó½á¹û
-int tempResult=0;//½á¹û»º´æ
+int result=0;//最后结果
+int tempResult=0;//结果缓存
 int countSign;
-unsigned char NoInput = 22;//¼üÅÌÎ´ÊäÈë±êÖ
+unsigned char NoInput = 22;//键盘未输入标?
 
 void delay_ms(unsigned int z);
 void display( int num);
@@ -18,7 +18,7 @@ void getResult();
 int getInput(int number);
 void runCalculator();
 
-//ÓÃÉ¨Ãè·¨»ñÈ¡¼üÖµ
+//用扫描法获取键值
 unsigned char KeyScan()
 {
 	unsigned char i = 0,j = 0;
@@ -58,7 +58,7 @@ unsigned char KeyScan()
 	return NoInput;
 }
 
-//ÑÓÊ±º¯Êý
+//延时函数
 void delay_ms(unsigned int z){
 	unsigned char i,j;
 	
@@ -73,7 +73,7 @@ void delay_ms(unsigned int z){
 }
 
 
-//ÊýÂë¹ÜÏÔÊ¾Êý×Ö
+//数码管显示数字
 void display( int k){
 	unsigned int a,b,c,d;
 	a = k/1000;
@@ -103,13 +103,13 @@ void display( int k){
 
 }
 
-//¼üÅÌÊý×ÖÓ³Éä
+//键盘数字映射
  int getInput(int number)
 {
 		int temp = -1;
 		switch(number)
 	{
-		//Êý×Ö¼üÓ³Éä
+		//数字键映射
 		case 9:temp=1;break;
 		case 8:temp=2;break;
 		case 7:temp=3;break;
@@ -120,7 +120,7 @@ void display( int k){
 		case 16:temp=8;break;
 		case 15:temp=9;break;
 		case 20:temp=0;break;
-		//¹¦ÄÜ¼üÓ³Éä
+		//功能键映射
 		case 6:case 10:case 14:case 18:
 			countSign=number;temp=-2;break;
 		case 19:temp=-3;break;
@@ -128,7 +128,7 @@ void display( int k){
 	return temp;
 }
 
-//¼ÆËã×îºó½á¹û
+//计算最后结果
 void count(int countFlag)
 {
 	switch(countFlag)		
@@ -140,21 +140,21 @@ void count(int countFlag)
 	}
 }
 
-//ÔËÐÐ¼ÆËãÆ÷
+//运行计算器
 void runCalculator()
 {
 	int temp=0;
 	while(1)
 	{
-		temp = getInput(KeyScan());//¶ÁÈ¡ÊäÈëµÄÊý×Ö
-		if(temp!=-1)//Èç¹ûÓÐÊäÈë
+		temp = getInput(KeyScan());//读取输入的数字
+		if(temp!=-1)//如果有输入
 		{
-			if(temp==-2)//Èç¹ûÊäÈëµÄÊÇÔËËã·ûºÅ
+			if(temp==-2)//如果输入的是运算符号
 			{			
 				tempResult = result;		
-				result = 0;//result¹éÁã¶ÁÈ¡ÏÂÒ»Î»Êý×Ö
+				result = 0;//result归零读取下一位数字
 			}
-			else if(temp==-3)//Èç¹ûÊäÈëµÄÊÇµÈºÅ
+			else if(temp==-3)//如果输入的是等号
 			count(countSign);
 			else
 			result = temp+ result*10;			
@@ -174,7 +174,7 @@ void main()
 }
 
 void play() interrupt 0{
-//Á÷Ë®µÆ
+//流水灯
 
 	unsigned char a ;
 	int i;
@@ -187,3 +187,4 @@ void play() interrupt 0{
 }
 }
 }
+
