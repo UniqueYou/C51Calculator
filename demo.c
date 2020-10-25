@@ -79,6 +79,7 @@ void delay_ms(unsigned int z){
 	}
 }
 
+
 //数码管显示数字
 void display( int k){
 	unsigned int a,b,c,d;
@@ -174,8 +175,18 @@ void runCalculator()
 	
 }
 
-//流水灯
+void main()
+{
+	
+	EA = 1;
+	EX0= 1;
+	IT0 = 0;
+	runCalculator();
+}
+
 void play() interrupt 0{
+//流水灯
+
 	unsigned char a ;
 	int i;
 	while(1){
@@ -188,11 +199,3 @@ void play() interrupt 0{
 }
 }
 
-void main()
-{
-	
-	EA = 1;
-	EX0= 1;
-	IT0 = 0;
-	runCalculator();
-}
