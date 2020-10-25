@@ -1,3 +1,10 @@
+/*
+	计算器、用INTO中断控制流水灯
+	王淞
+	11903990330
+	2020/10/25
+*/
+
 #include <reg52.h>
 #include <intrins.h>
 unsigned  char code table[] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
@@ -8,8 +15,8 @@ sbit light4 = P2^3;
 
 int result=0;//最后结果
 int tempResult=0;//结果缓存
-int countSign;
-unsigned char NoInput = 22;//键盘未输入标?
+int countSign;//运算符号缓存
+unsigned char NoInput = 22;//键盘未输入标志
 
 void delay_ms(unsigned int z);
 void display( int num);
@@ -72,7 +79,6 @@ void delay_ms(unsigned int z){
 	}
 }
 
-
 //数码管显示数字
 void display( int k){
 	unsigned int a,b,c,d;
@@ -122,8 +128,9 @@ void display( int k){
 		case 20:temp=0;break;
 		//功能键映射
 		case 6:case 10:case 14:case 18:
-			countSign=number;temp=-2;break;
-		case 19:temp=-3;break;
+			countSign=number;temp=-2;break;//运算符号标志
+		case 19:temp=-3;break;//等号标志
+		case 21:temp=-4;break;//退位标志
 	}
 	return temp;
 }
@@ -133,7 +140,7 @@ void count(int countFlag)
 {
 	switch(countFlag)		
 	{
-		case 6:result+=tempResult;break;
+		case 6: result=tempResult+result;break;
 		case 10:result=tempResult-result;break;
 		case 14:result=tempResult*result;break;
 		case 18:result=tempResult/result;break;
@@ -156,6 +163,9 @@ void runCalculator()
 			}
 			else if(temp==-3)//如果输入的是等号
 			count(countSign);
+			//判断是否是退位
+			else if(temp==-4)
+				result = result/10;
 			else
 			result = temp+ result*10;			
 		}
@@ -164,18 +174,8 @@ void runCalculator()
 	
 }
 
-void main()
-{
-	
-	EA = 1;
-	EX0= 1;
-	IT0 = 0;
-	runCalculator();
-}
-
-void play() interrupt 0{
 //流水灯
-
+void play() interrupt 0{
 	unsigned char a ;
 	int i;
 	while(1){
@@ -188,3 +188,11 @@ void play() interrupt 0{
 }
 }
 
+void main()
+{
+	
+	EA = 1;
+	EX0= 1;
+	IT0 = 0;
+	runCalculator();
+}
