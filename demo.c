@@ -5,17 +5,20 @@ sbit light1 = P2^0;
 sbit light2 = P2^1;
 sbit light3 = P2^2;
 sbit light4 = P2^3;
-int result=0;
-int tempResult=0;
+
+int result=0;//×îºó½á¹û
+int tempResult=0;//½á¹û»º´æ
 int countSign;
-unsigned char NoInput = 22;
-unsigned char Count = 23;
+unsigned char NoInput = 22;//¼üÅÌÎ´ÊäÈë±êÖ
 
 void delay_ms(unsigned int z);
 void display( int num);
 unsigned char KeyScan();
 void getResult();
+int getInput(int number);
+void runCalculator();
 
+//ÓÃÉ¨Ãè·¨»ñÈ¡¼üÖµ
 unsigned char KeyScan()
 {
 	unsigned char i = 0,j = 0;
@@ -55,7 +58,7 @@ unsigned char KeyScan()
 	return NoInput;
 }
 
-//��ʱ����
+//ÑÓÊ±º¯Êý
 void delay_ms(unsigned int z){
 	unsigned char i,j;
 	
@@ -70,7 +73,7 @@ void delay_ms(unsigned int z){
 }
 
 
-//�������ʾ����
+//ÊýÂë¹ÜÏÔÊ¾Êý×Ö
 void display( int k){
 	unsigned int a,b,c,d;
 	a = k/1000;
@@ -100,12 +103,13 @@ void display( int k){
 
 }
 
-//��������ӳ��
+//¼üÅÌÊý×ÖÓ³Éä
  int getInput(int number)
 {
 		int temp = -1;
 		switch(number)
 	{
+		//Êý×Ö¼üÓ³Éä
 		case 9:temp=1;break;
 		case 8:temp=2;break;
 		case 7:temp=3;break;
@@ -116,13 +120,15 @@ void display( int k){
 		case 16:temp=8;break;
 		case 15:temp=9;break;
 		case 20:temp=0;break;
-		case 6:case 10:case 14:case 18:countSign=number;temp=-2;break;
+		//¹¦ÄÜ¼üÓ³Éä
+		case 6:case 10:case 14:case 18:
+			countSign=number;temp=-2;break;
 		case 19:temp=-3;break;
 	}
 	return temp;
 }
 
-//����
+//¼ÆËã×îºó½á¹û
 void count(int countFlag)
 {
 	switch(countFlag)		
@@ -134,44 +140,41 @@ void count(int countFlag)
 	}
 }
 
-void main()
+//ÔËÐÐ¼ÆËãÆ÷
+void runCalculator()
 {
 	int temp=0;
+	while(1)
+	{
+		temp = getInput(KeyScan());//¶ÁÈ¡ÊäÈëµÄÊý×Ö
+		if(temp!=-1)//Èç¹ûÓÐÊäÈë
+		{
+			if(temp==-2)//Èç¹ûÊäÈëµÄÊÇÔËËã·ûºÅ
+			{			
+				tempResult = result;		
+				result = 0;//result¹éÁã¶ÁÈ¡ÏÂÒ»Î»Êý×Ö
+			}
+			else if(temp==-3)//Èç¹ûÊäÈëµÄÊÇµÈºÅ
+			count(countSign);
+			else
+			result = temp+ result*10;			
+		}
+		display(result);		
+	}
+	
+}
+
+void main()
+{
+	
 	EA = 1;
 	EX0= 1;
 	IT0 = 0;
-	
-	while(1)
-	{
-		temp = getInput(KeyScan());//��ȡ���������
-		if(temp!=-1)//���������
-		{
-			if(temp==-2)//�����������������
-			{			
-				tempResult = result;		
-				result = 0;
-				display(result);
-
-			}else  if(temp==-3)//���������ǵȺ�
-			{
-				count(countSign);
-				display(result);
-			}else
-			{
-			result = temp+ result*10;	
-			display(result);	
-			}				
-		}
-		else
-		{
-			display(result);		
-		}
-			
-	}
+	runCalculator();
 }
 
 void play() interrupt 0{
-//��ˮ��
+//Á÷Ë®µÆ
 
 	unsigned char a ;
 	int i;
@@ -184,4 +187,3 @@ void play() interrupt 0{
 }
 }
 }
-
