@@ -8,6 +8,7 @@
 #include <reg52.h>
 #include <intrins.h>
 unsigned  char code table[] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+unsigned char code minusSign ={0xbf};//显示负号
 sbit light1 = P2^0;
 sbit light2 = P2^1;
 sbit light3 = P2^2;
@@ -83,15 +84,35 @@ void delay_ms(unsigned int z){
 //数码管显示数字
 void display( int k){
 	unsigned int a,b,c,d;
+	int sign = 1;
+	
+	if(k<0)
+	{
+	k*=-1;
+	sign=-1;
+	}
+	
 	a = k/1000;
 	b = k/100%10;
 	c = k/10%10;
 	d = k%10;
 
+	if(a==0 && sign==-1)
+	{
+	light1 = 0;
+	P0 = minusSign;
+	delay_ms(5);
+	light1 = 1;
+		
+	}
+	else
+	{
+	
 	light1 = 0;
 	P0 = table[a];
 	delay_ms(5);
 	light1 = 1;
+	}
 	
 	light2 = 0;
 	P0 = table[b];
